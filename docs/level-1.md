@@ -25,5 +25,27 @@ psql on PATH.
 ### Terminal commands used
 cd, dir, del, code ., git status/add/commit/push/diff/log
 
-## Task 2: Express REST API
-(in progress)
+## Task 2: Express REST API (completed)
+
+### What I built
+- Express 5 server in the `server/` folder with a health check route.
+- Product CRUD API at /api/products using temporary in-memory data
+  (it is replaced by PostgreSQL and Prisma in Level 2).
+- Zod validation for product data (name, SKU, price, stock, threshold).
+- Delete archives a product instead of removing it permanently.
+- Central error handling: 400 (invalid input or JSON), 404 (not found),
+  409 (duplicate SKU), 500 (unexpected server error).
+
+### Endpoints
+- GET /api/health
+- GET /api/products
+- GET /api/products/:id
+- POST /api/products
+- PUT /api/products/:id
+- DELETE /api/products/:id (archives)
+
+### Testing
+Tested all 12 cases with Hoppscotch, an API client that does the same job
+as Postman or Thunder Client: list, get one, not found, invalid id, create,
+duplicate SKU, validation errors, update, empty update, archive, archived
+product hidden, unknown route.
