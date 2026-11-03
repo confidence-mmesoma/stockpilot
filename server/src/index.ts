@@ -1,9 +1,19 @@
+import 'dotenv/config';
+import cors from 'cors';
 import express from "express";
 import productRoutes from "./routes/products.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+  // Only the React app is allowed to call this API from a browser
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL ?? 'http://localhost:5173',
+      credentials: true,
+    }),
+  );
 
 // Lets the server read JSON sent in request bodies
 app.use(express.json());

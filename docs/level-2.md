@@ -31,5 +31,28 @@ survives a server restart. Relationships and indexes confirmed in psql.
 The User, Sale and SaleItem tables exist and are linked, but the app code
 that uses them (authentication and sales) comes in Level 3.
 
-## Task 1: React frontend
-(not started)
+## Task 1: React frontend (completed)
+
+### What I built
+- React + TypeScript + Tailwind CSS app (Vite) in the client/ folder.
+- Product list loaded from the Express API, with loading, error and retry states.
+- Create, edit and archive products from the UI.
+- Reusable components: Button, FormField, ProductForm, ProductTable,
+  Spinner, ErrorMessage.
+- Data layer: one request() helper (api/http.ts) that turns failures into
+  readable errors, product API functions (api/products.ts), and a
+  useProducts hook that loads the data.
+- Functional components with React state (useState, useEffect, a custom hook).
+- Forms validate in the browser first, then show any field errors returned
+  by the server.
+- CORS enabled on the API for the client address only (CLIENT_URL).
+
+### Testing
+Tested in the browser: list, loading state (throttled network), error and
+retry (server stopped), create (valid, empty, duplicate SKU, server-side
+validation error, server down), edit (prefilled form, update, empty name,
+duplicate SKU, cancel), archive (cancel, confirm, server down).
+
+### Note
+The client uses TypeScript 6 because typescript-eslint does not support
+TypeScript 7 yet. The server uses TypeScript 7.
