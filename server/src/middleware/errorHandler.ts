@@ -1,12 +1,13 @@
 // Runs when no route matches the request
-export function notFound(req, res) {
+import type { Request, Response, NextFunction } from 'express';
+export function notFound(req: Request, res: Response) {
   res
     .status(404)
     .json({ message: `Route not found: ${req.method} ${req.originalUrl}` });
 }
 
 // Catches any error thrown inside the app
-export function errorHandler(err, req, res, next) {
+export function errorHandler(err: Error & { type?: string }, req: Request, res: Response, next: NextFunction) {
   // The client sent a body that is not valid JSON
   if (err.type === "entity.parse.failed") {
     return res
