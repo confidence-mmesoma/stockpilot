@@ -1,8 +1,13 @@
 import { Router, type Request } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
+import { requireAuth, requireRole } from '../middleware/auth.js';
+import { formatIssues } from '../lib/validation.js';
 
 const router = Router();
+
+// Everything below requires a logged-in user
+router.use(requireAuth);
 
 // Rules for valid product data
 const fields = {
@@ -19,12 +24,12 @@ const createSchema = z.object({
 });
 const updateSchema = z.object(fields).partial();
 
-function formatIssues(error: z.ZodError) {
-  return error.issues.map((issue) => ({
-    field: issue.path.join('.'),
-    message: issue.message,
-  }));
-}
+// function formatIssues(error: z.ZodError) {
+//   return error.issues.map((issue) => ({
+//     field: issue.path.join('.'),
+//     message: issue.message,
+//   }));
+// }
 
 function parseId(req: Request) {
   const id = Number(req.params.id);
@@ -68,7 +73,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/products: create a product
-router.post('/', async (req, res) => {
+router.post('/', requireRole('ADMIN'), async (req, res) => {
   const result = createSchema.safeParse(req.body);
   if (!result.success) {
     res.status(400).json({ message: 'Validation failed', errors: formatIssues(result.error) });
@@ -99,7 +104,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/products/:id: update one or more fields of a product
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireRole('ADMIN'), async (req, res) => {
   const id = parseId(req);
   if (!id) {
     res.status(400).json({ message: 'Invalid product id' });
@@ -141,7 +146,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/products/:id: archive a product (it is not permanently removed)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireRole('ADMIN'), async (req, res) => {
   const id = parseId(req);
   if (!id) {
     res.status(400).json({ message: 'Invalid product id' });

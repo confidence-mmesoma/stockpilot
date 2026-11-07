@@ -3,6 +3,10 @@ import cors from 'cors';
 import express from "express";
 import productRoutes from "./routes/products.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
+import cookieParser from 'cookie-parser';
+import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
+import salesRoutes from './routes/sales.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,6 +21,7 @@ const PORT = process.env.PORT || 5000;
 
 // Lets the server read JSON sent in request bodies
 app.use(express.json());
+app.use(cookieParser());
 
 // Health check route: confirms the API is running
 app.get("/api/health", (req, res) => {
@@ -27,6 +32,9 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/products", productRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use('/api/sales', salesRoutes);
 
 // These two must stay last
 app.use(notFound);
