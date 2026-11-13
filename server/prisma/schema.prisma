@@ -40,6 +40,7 @@ model Product {
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
   saleItems         SaleItem[]
+  notifications Notification[]
 
   @@index([name])
   @@index([isArchived])
@@ -69,3 +70,21 @@ model SaleItem {
   @@index([saleId])
   @@index([productId])
 }
+
+  enum NotificationType {
+    LOW_STOCK
+    OUT_OF_STOCK
+  }
+
+  model Notification {
+    id        Int              @id @default(autoincrement())
+    type      NotificationType
+    message   String
+    productId Int
+    product   Product          @relation(fields: [productId], references: [id])
+    isRead    Boolean          @default(false)
+    createdAt DateTime         @default(now())
+
+    @@index([isRead, createdAt])
+    @@index([productId])
+  }

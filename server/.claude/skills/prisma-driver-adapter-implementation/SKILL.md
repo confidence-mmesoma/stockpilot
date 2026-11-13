@@ -268,3 +268,12 @@ Prisma uses preserved original details when an unmapped driver error becomes `P2
 - [Driver adapter interfaces](https://github.com/prisma/prisma/blob/v7/packages/driver-adapter-utils/src/types.ts)
 - [PostgreSQL adapter transaction implementation](https://github.com/prisma/prisma/blob/v7/packages/adapter-pg/src/pg.ts)
 - [PostgreSQL adapter error mapping](https://github.com/prisma/prisma/blob/v7/packages/adapter-pg/src/errors.ts)
+
+export type Role = 'ADMIN' | 'STAFF';
+
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+  role: Role;
+};

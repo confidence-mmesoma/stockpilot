@@ -28,6 +28,19 @@ export const saleInclude = {
 // Work in kobo (whole numbers) so money maths never has rounding errors
 const toKobo = (amount: { toString(): string }) => Math.round(Number(amount.toString()) * 100);
 
+  function getStockAlert(change: StockChange) {
+    if (change.after === 0 && change.before > 0) {
+      return { type: 'OUT_OF_STOCK' as const, message: `${change.name} is out of stock` };
+    }
+    if (change.before > change.lowStockThreshold && change.after <= change.lowStockThreshold) {
+      return {
+        type: 'LOW_STOCK' as const,
+        message: `${change.name} is running low: ${change.after} left (alert level ${change.lowStockThreshold})`,
+      };
+    }
+    return null;
+  }
+
 export async function createSale(userId: number, items: SaleItemInput[]) {
   // Always handle products in the same order, so two sales at once cannot deadlock
   const sorted = [...items].sort((a, b) => a.productId - b.productId);
@@ -76,7 +89,16 @@ export async function createSale(userId: number, items: SaleItemInput[]) {
       include: saleInclude,
     });
 
-    return { sale, stockChanges };
+          // Save an alert only when stock drops through the threshold (or hits zero)
+      const alerts = stockChanges.flatMap((change) => {
+        const alert = getStockAlert(change);
+        return alert ? [{ ...alert, productId: change.productId }] : [];
+      });
+      const notifications = await Promise.all(
+        alerts.map((alert) => tx.notification.create({ data: alert })),
+      );
+
+    return { sale, stockChanges, notifications };
   });
 }
 

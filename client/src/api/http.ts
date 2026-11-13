@@ -13,6 +13,13 @@ export class ApiError extends Error {
   }
 }
 
+// The app registers a function here, to be told when the login has expired
+let onUnauthorized: (() => void) | null = null;
+
+export function setUnauthorizedHandler(handler: (() => void) | null) {
+  onUnauthorized = handler;
+}
+
 // One place that talks to the API and turns failures into readable errors
 export async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   let response: Response;
@@ -28,6 +35,11 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
 
   const body = await response.json().catch(() => null);
 
+        // A 401 on any other request means the login has expired
+      if (response.status === 401 && !path.startsWith('/api/auth/login')) {
+        onUnauthorized?.();
+      }
+      
   if (!response.ok) {
     throw new ApiError(body?.message ?? 'Something went wrong', response.status, body?.errors);
   }

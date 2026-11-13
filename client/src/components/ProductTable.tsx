@@ -32,9 +32,15 @@ type Props = {
   products: Product[];
   onEdit: (product: Product) => void;
   onArchive: (product: Product) => void;
+  canManage: boolean;
 };
 
-export function ProductTable({ products, onEdit, onArchive }: Props) {
+export function ProductTable({
+  products,
+  canManage,
+  onEdit,
+  onArchive,
+}: Props) {
   if (products.length === 0) {
     return <p className="py-10 text-center text-slate-500">No products yet.</p>;
   }
@@ -49,7 +55,9 @@ export function ProductTable({ products, onEdit, onArchive }: Props) {
             <th className="px-4 py-3 text-right font-medium">Price</th>
             <th className="px-4 py-3 text-right font-medium">Stock</th>
             <th className="px-4 py-3 font-medium">Status</th>
-            <th className="px-4 py-3 text-right font-medium">Actions</th>
+            {canManage && (
+              <th className="px-4 py-3 text-right font-medium">Actions</th>
+            )}
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -67,24 +75,26 @@ export function ProductTable({ products, onEdit, onArchive }: Props) {
               </td>
               <td className="px-4 py-3">
                 <StockBadge product={product} />
-                <td className="px-4 py-3">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="secondary"
-                      className="px-3 py-1.5"
-                      onClick={() => onEdit(product)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="danger"
-                      className="px-3 py-1.5"
-                      onClick={() => onArchive(product)}
-                    >
-                      Archive
-                    </Button>
-                  </div>
-                </td>
+                {canManage && (
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="secondary"
+                        className="px-3 py-1.5"
+                        onClick={() => onEdit(product)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="danger"
+                        className="px-3 py-1.5"
+                        onClick={() => onArchive(product)}
+                      >
+                        Archive
+                      </Button>
+                    </div>
+                  </td>
+                )}
               </td>
             </tr>
           ))}

@@ -1,0 +1,5 @@
+[33m1cd1c30[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Add authentication, staff management and sales API (Level 3, in progress)
+[33m4ccf57a[m[33m ([m[1;33mtag: [m[1;33mlevel-2[m[33m)[m Add React frontend with product management (Level 2 Task 1)
+[33m62d349d[m Add PostgreSQL and Prisma, migrate to TypeScript (Level 2 Task 3)
+[33ma73fdac[m Add Express REST API with product CRUD (Level 1 Task 2)
+[33meb9a296[m Add Level 1 write-up for Task 1

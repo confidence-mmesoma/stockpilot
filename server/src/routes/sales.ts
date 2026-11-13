@@ -4,6 +4,7 @@ import { prisma } from '../lib/prisma.js';
 import { formatIssues } from '../lib/validation.js';
 import { requireAuth } from '../middleware/auth.js';
 import { createSale, saleInclude, SaleError, toSaleResponse } from '../services/sales.js';
+import { emitToAdmins, emitToAll } from '../realtime/socket.js';
 
 const router = Router();
 
@@ -70,8 +71,18 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    const { sale } = await createSale(user.id, result.data.items);
-    res.status(201).json(toSaleResponse(sale));
+    const { sale, stockChanges, notifications } = await createSale(user.id, result.data.items);
+
+      // The sale is saved. Now tell connected users, with small messages.
+      emitToAll(
+        'stock:updated',
+        stockChanges.map((change) => ({ productId: change.productId, stock: change.after })),
+      );
+      for (const notification of notifications) {
+        emitToAdmins('notification:new', notification);
+      }
+
+      res.status(201).json(toSaleResponse(sale));
   } catch (error) {
     if (error instanceof SaleError) {
       res.status(error.status).json({ message: error.message });
